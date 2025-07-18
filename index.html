@@ -467,6 +467,81 @@ body {
 }
 
 	
+/* Copied for moving pdf */
+
+.movingpdf-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+}
+
+
+.movingpdf-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.movingpdf-modal-content {
+    position: relative;
+    margin: 2% auto;
+    width: 90%;
+    height: 90%;
+    background: white;
+    border-radius: 12px;
+	
+    box-shadow: 0 5px 25px rgba(0,0,0,0.3);
+    z-index: 10001;
+    overflow: hidden;
+}
+
+.movingpdf-viewer-container {
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+.movingpdf-modal-iframe {
+	
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+.movingpdf-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background-color: rgba(0,0,0,0.2); /* Reduced opacity from 0.7 to 0.5 */
+    backdrop-filter: blur(5px); /* Reduced blur from 8px to 5px */
+    -webkit-backdrop-filter: blur(5px); /* Vendor prefix */
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 10002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: all 0.2s;
+}
+
+.movingpdf-modal-close:hover {
+    background: #ff0000;
+    transform: scale(1.1);
+}
 
 
 			</style>
@@ -2205,7 +2280,21 @@ body {
 			</div>
 		</head>
 		<!-- PDF Viewer Modal -->
-<!-- PDF Viewer Modal - Clean Version -->
+<!-- Moving PDF Viewer Modal - Clean Version -->
+<div id="movingpdfModal" class="movingpdf-modal">
+    <div class="movingpdf-modal-backdrop"></div>
+    <div class="movingpdf-modal-content">
+        <button class="movingpdf-modal-close" id="movingpdfModalClose">&times;</button>
+        <div class="movingpdf-viewer-container">
+            <!-- Use either embed or iframe, not both -->
+            <embed id="movingpdfEmbed" type="application/pdf" width="100%" height="100%">
+            <!-- OR -->
+            <iframe id="movingpdfViewer" class="movingpdf-modal-iframe"></iframe>
+        </div>
+    </div>
+</div>
+<!--  PDF Viewer Modal - Clean Version -->
+
 <div id="pdfModal" class="pdf-modal">
     <div class="pdf-modal-backdrop"></div>
     <div class="pdf-modal-content">
@@ -2218,6 +2307,7 @@ body {
         </div>
     </div>
 </div>
+
 		</body>
 		</html></header>
 			
@@ -2467,66 +2557,66 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
-    const brochureBtn = document.getElementById('movingbrochureBtn');
-    const pdfModal = document.getElementById('pdfModal');
-    const pdfModalClose = document.getElementById('pdfModalClose');
-    const pdfViewerContainer = document.querySelector('.pdf-viewer-container');
+    const movingbrochureBtn = document.getElementById('movingbrochureBtn');
+    const movingpdfModal = document.getElementById('movingpdfModal');
+    const movingpdfModalClose = document.getElementById('movingpdfModalClose');
+    const movingpdfViewerContainer = document.querySelector('.movingpdf-viewer-container');
     
     // Store the original PDF source
-    const pdfSource = 'Broucher.pdf#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH';
+    const movingpdfSource = 'Broucher.pdf#toolbar=0&navpanes=0&scrollbar=0&statusbar=0&view=FitH';
     
-    function createNewViewer() {
+    function movingcreateNewViewer() {
         // Clear container
-        pdfViewerContainer.innerHTML = '';
+        movingpdfViewerContainer.innerHTML = '';
         
         // Create new iframe
-        const iframe = document.createElement('iframe');
-        iframe.id = 'pdfViewer';
-        iframe.className = 'pdf-modal-iframe';
-        pdfViewerContainer.appendChild(iframe);
+        const movingiframe = document.createElement('iframe');
+        movingiframe.id = 'pdfViewer';
+        movingiframe.className = 'pdf-modal-iframe';
+        movingpdfViewerContainer.appendChild(movingiframe);
         
-        return iframe;
+        return movingiframe;
     }
     
-    let currentViewer = createNewViewer();
+    let movingcurrentViewer = movingcreateNewViewer();
     
-    brochureBtn.addEventListener('click', function() {
+    movingbrochureBtn.addEventListener('click', function() {
         // Create new viewer if needed
-        if (!document.getElementById('pdfViewer')) {
-            currentViewer = createNewViewer();
+        if (!document.getElementById('movingpdfViewer')) {
+            movingcurrentViewer = movingcreateNewViewer();
         }
         
         // Create a new timestamp to force reload
-        const timestamp = new Date().getTime();
-        const url = pdfSource + '&t=' + timestamp;
+        const movingtimestamp = new Date().getTime();
+        const movingurl = movingpdfSource + '&t=' + movingtimestamp;
         
         // Set the source
-        currentViewer.src = url;
+        movingcurrentViewer.src = movingurl;
         
         // Show modal
-        pdfModal.style.display = 'block';
+        movingpdfModal.style.display = 'block';
         document.body.style.overflow = 'hidden';
     });
     
-    function closeModal() {
-        pdfModal.style.display = 'none';
+    function movingcloseModal() {
+        movingpdfModal.style.display = 'none';
         document.body.style.overflow = '';
         
         // Don't destroy the viewer, just remove the source
-        if (currentViewer) {
-            currentViewer.src = '';
+        if (movingcurrentViewer) {
+            movingcurrentViewer.src = '';
         }
     }
     
-    pdfModalClose.addEventListener('click', closeModal);
+    movingpdfModalClose.addEventListener('click', movingcloseModal);
     
     // Close when clicking backdrop
-    document.querySelector('.pdf-modal-backdrop').addEventListener('click', closeModal);
+    document.querySelector('.movingpdf-modal-backdrop').addEventListener('click', movingcloseModal);
     
     // Close with ESC key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            closeModal();
+            movingcloseModal();
         }
     });
 });
